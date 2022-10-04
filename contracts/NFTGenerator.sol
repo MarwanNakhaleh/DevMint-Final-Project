@@ -35,9 +35,15 @@ contract NFTGenerator is ERC1155, Ownable, Pausable, ERC1155Burnable, ProjectOwn
     uint256 listingPrice = 0.03 ether;
 
     address payable private projectOwnerAddress = payable(0x3D2A99F0EDe085797e26098a59024a1263299b19);
+    address private contractOwner;
 
     modifier userHasEnoughTokens(uint256 price) {
         require(token.balanceOf(msg.sender) >= price, "User does not have enough tokens to buy");
+        _;
+    }
+
+    modifier approvedToSpendXTokens(uint numTokens) {
+        require(token.allowance(msg.sender, address(this)) >= numTokens, "msg.sender is not approved to spend that many tokens!");
         _;
     }
 
@@ -81,26 +87,30 @@ contract NFTGenerator is ERC1155, Ownable, Pausable, ERC1155Burnable, ProjectOwn
             supply3 = _supply3;
             //_mint(msg.sender, _id3, _supply3, "");
         }
-
-        _token = token;
+        contractOwner = msg.sender;
+        token = _token;
         projectOwnerAddress.transfer(msg.value);
     }
 
     function userMintToken(uint256 tokenId) external {
+        bool tokensTransferredFrom;
         if(tokenId == id1) {
             require(price1 > 0, "price has not been set yet for token ID 1");
-            require(IERC20(token).allowance(address(this), msg.sender) >= price1, "user has now allowed contract to spend enough tokens to mint ERC 1155");
-            IERC20(token).transferFrom(msg.sender, this.owner(), price1);
+            require(IERC20(token).allowance(msg.sender, address(this)) >= price1, "user has not allowed contract to spend enough tokens to mint ERC 1155");
+            tokensTransferredFrom = IERC20(token).transferFrom(msg.sender, contractOwner, price1);
+            require(tokensTransferredFrom, "transfer failed");
             _mint(msg.sender, id1, 1, "");
         } else if(tokenId == id2) {
-            require(price2 > 0, "price has not been set yet for token ID");
-            require(IERC20(token).allowance(address(this), msg.sender) >= price2, "user has now allowed contract to spend enough tokens to mint ERC 1155");
-            IERC20(token).transferFrom(msg.sender, this.owner(), price2);
+            require(price2 > 0, "price has not been set yet for token ID 2");
+            require(IERC20(token).allowance(msg.sender, address(this)) >= price2, "user has now allowed contract to spend enough tokens to mint ERC 1155");
+            tokensTransferredFrom = IERC20(token).transferFrom(msg.sender, this.owner(), price2);
+            require(tokensTransferredFrom, "transfer failed");
             _mint(msg.sender, id2, 1, "");
         } else if(tokenId == id3) {
-            require(price2 > 0, "price has not been set yet for token ID");
-            require(IERC20(token).allowance(address(this), msg.sender) >= price3, "user has now allowed contract to spend enough tokens to mint ERC 1155");
-            IERC20(token).transferFrom(msg.sender, this.owner(), price3);
+            require(price2 > 0, "price has not been set yet for token ID 3");
+            require(IERC20(token).allowance(msg.sender, address(this)) >= price3, "user has now allowed contract to spend enough tokens to mint ERC 1155");
+            tokensTransferredFrom = IERC20(token).transferFrom(msg.sender, this.owner(), price3);
+            require(tokensTransferredFrom, "transfer failed");
             _mint(msg.sender, id3, 1, "");
         }
     }
@@ -111,6 +121,12 @@ contract NFTGenerator is ERC1155, Ownable, Pausable, ERC1155Burnable, ProjectOwn
 
     function setListingPrice(uint256 _listingPrice) external onlyProjectOwner(projectOwnerAddress) {
         listingPrice = _listingPrice;
+    }
+
+    function setTokenPrice(uint256 tokenId, uint256 tokenPrice) external onlyOwner {
+        if(tokenId == id1) price1 = tokenPrice;
+        if(tokenId == id2) price2 = tokenPrice;
+        if(tokenId == id3) price3 = tokenPrice;
     }
 
     function setUri(string memory uri) external onlyOwner whenNotPaused {

@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 
 describe("NFTGenerator", function () {
-  describe("The constructor can be called", function () {
+  describe("The constructor can be called and basics work", function () {
     let nftGenerator;
     let NFTGenerator;
 
@@ -100,6 +100,69 @@ describe("NFTGenerator", function () {
 
     it("Reject when third token ID is same as second ID", async function () {
         await expect(NFTGenerator.deploy(1, "POOP", 1000000, 2, "BUTT", 500000, 2, "AZZ", 69420, token.address, {value: validPaymentAmount})).to.be.revertedWith("third token ID must not be equal to the second token ID");
+    });
+  });
+
+  describe("Tokens can be minted properly", function () {
+    let nftGenerator;
+    let NFTGenerator;
+
+    let token;
+    let Token;
+
+    let owner;
+    let addr1;
+    let addr2;
+    let addr3;
+
+    const validPaymentAmount = hre.ethers.utils.parseEther("0.03");
+
+    beforeEach(async function() {
+        [owner, addr1, addr2, addr3] = await hre.ethers.getSigners();
+        Token = await hre.ethers.getContractFactory("TokenGenerator");
+        token = await Token.deploy("PoopToken", "POOP", 1000000);
+        NFTGenerator = await hre.ethers.getContractFactory("NFTGenerator");
+        nftGenerator = await NFTGenerator.deploy(1, "POOP", 1000000, 0, "", 0, 0, "", 0, token.address, {value: validPaymentAmount});
+    });
+
+    it("User can't mint an ERC 1155 without a price set by owner", async function () {
+        await expect(nftGenerator.connect(addr1).userMintToken(1)).to.be.revertedWith("price has not been set yet for token ID 1");
+    });
+
+    it("User can't mint an ERC 1155 without approved tokens", async function () {
+        await nftGenerator.connect(owner).setTokenPrice(1, 100);
+        let allowance = await token.allowance(addr1.address, nftGenerator.address);
+        console.log(`the contract is allowed to spend ${allowance} POOP tokens`);
+        await token.connect(owner).transfer(addr1.address, 1000);
+       
+        //await token.connect(addr1).approve(nftGenerator.address, 1000);
+        
+        await expect(nftGenerator.connect(addr1).userMintToken(1)).to.be.revertedWith("user has not allowed contract to spend enough tokens to mint ERC 1155");
+    });
+
+    it("User can mint an ERC 1155 with more than enough approved tokens", async function () {
+        await nftGenerator.connect(owner).setTokenPrice(1, 100);
+        let allowance = await token.allowance(addr1.address, nftGenerator.address);
+        console.log(`the contract is allowed to spend ${allowance} POOP tokens`);
+
+        await token.connect(owner).transfer(addr1.address, 1000);
+        await token.connect(addr1).approve(nftGenerator.address, 1000);
+
+        allowance = await token.allowance(addr1.address, nftGenerator.address);
+        console.log(`the contract is allowed to spend ${allowance} POOP tokens`);
+        
+        await nftGenerator.connect(addr1).userMintToken(1);
+    });
+
+    it("User can't mint an ERC 1155 without approved tokens", async function () {
+        await nftGenerator.connect(owner).setTokenPrice(1, 100);
+        let allowance = await token.allowance(addr1.address, nftGenerator.address);
+        console.log(`the contract is allowed to spend ${allowance} POOP tokens`);
+        await token.connect(owner).transfer(addr1.address, 1000);
+       
+        await token.connect(addr1).approve(nftGenerator.address, 10);
+        
+        await expect(nftGenerator.connect(addr1).userMintToken(1)).to.be.revertedWith("user has not allowed contract to spend enough tokens to mint ERC 1155");
     });
   });
 });
