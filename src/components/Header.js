@@ -102,7 +102,7 @@ const Header = (props) => {
           <StyledToolBar>
             <Link href="#" underline="none">
               <StyledLogo>
-                Zero To Code: Fast and Cheap
+                Business NFT Generator
               </StyledLogo>
             </Link>
 
