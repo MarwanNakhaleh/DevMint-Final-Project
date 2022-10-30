@@ -1,41 +1,32 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./TokenGenerator.sol";
 import "./modifiers/ProjectOwner.sol";
 
-contract NFTGenerator is ERC1155, Ownable, Pausable, ERC1155Burnable, ProjectOwnerOwnable {
+contract NFTGenerator is ERC721, Ownable, Pausable, ERC721Burnable, ProjectOwnerOwnable {
+    using Counters for Counters.Counter;
+    Counters.Counter private _tokenIdCounter;
+
     mapping(address => uint256) public whitelistedAddresses;
     mapping(uint256 => uint256) public tokenValidUntil;
 
-    // token info
-    uint256 public id1;
-    string public name1;
-    uint256 public supply1;
-    uint256 public price1;
-
-    uint256 public id2;
-    string public name2;
-    uint256 public supply2;
-    uint256 public price2;
-
-    uint256 public id3;
-    string public name3;
-    uint256 public supply3;
-    uint256 public price3;
-
     IERC20 public token;
 
-    uint256 listingPrice = 0.03 ether;
+    uint256 public listingPrice = 0.03 ether;
+    uint256 public nftPrice;
 
     address payable private projectOwnerAddress = payable(0x3D2A99F0EDe085797e26098a59024a1263299b19);
     address private contractOwner;
+
+    string public baseUri = "https://www.google.com/";
 
     modifier userHasEnoughTokens(uint256 price) {
         require(token.balanceOf(msg.sender) >= price, "User does not have enough tokens to buy");
@@ -47,72 +38,20 @@ contract NFTGenerator is ERC1155, Ownable, Pausable, ERC1155Burnable, ProjectOwn
         _;
     }
 
-    constructor(
-        uint256 _id1,
-        string memory _name1,
-        uint256 _supply1,
-        uint256 _id2,
-        string memory _name2,
-        uint256 _supply2,
-        uint256 _id3,
-        string memory _name3,
-        uint256 _supply3,
-        IERC20 _token
-    ) payable ERC1155("") {
+    constructor(IERC20 _token, string memory _name, string memory _symbol) payable ERC721(_name, _symbol) {
         require(msg.value >= listingPrice, "Price must be equal to listing price");
-        require(_id1 > 0, "ID must be nonzero");
-        require(bytes(_name1).length > 0, "Name must have content");
-        require(_supply1 > 1, "Supply must be more than one");
-
-        id1 = _id1;
-        name1 = _name1;
-        supply1 = _supply1;
-        //_mint(msg.sender, _id1, _supply1, "");
-
-        if(_id2 > 0 && bytes(_name2).length != 0 && _supply2 > 0) {
-            require(_id2 != id1, "second token ID must not be equal to the first token ID");
-            require(keccak256(abi.encodePacked(_name1)) != keccak256(abi.encodePacked(_name2)), "second token name must not be equal to the first token name");
-            id2 = _id2;
-            name2 = _name2;
-            supply2 = _supply2;
-            //_mint(msg.sender, _id2, _supply2, "");
-        }
-        if(_id3 > 0 && bytes(_name3).length != 0 && _supply3 > 0) {
-            require(_id3 != id2, "third token ID must not be equal to the second token ID");
-            require(keccak256(abi.encodePacked(_name2)) != keccak256(abi.encodePacked(_name3)), "third token name must not be equal to the second token name");
-            require(_id3 != id1, "third token ID must not be equal to the first token ID");
-            require(keccak256(abi.encodePacked(_name3)) != keccak256(abi.encodePacked(_name1)), "third token name must not be equal to the first token name");
-            id3 = _id3;
-            name3 = _name3;
-            supply3 = _supply3;
-            //_mint(msg.sender, _id3, _supply3, "");
-        }
+        
         contractOwner = msg.sender;
         token = _token;
         projectOwnerAddress.transfer(msg.value);
     }
 
-    function userMintToken(uint256 tokenId) external {
-        bool tokensTransferredFrom;
-        if(tokenId == id1) {
-            require(price1 > 0, "price has not been set yet for token ID 1");
-            require(IERC20(token).allowance(msg.sender, address(this)) >= price1, "user has not allowed contract to spend enough tokens to mint ERC 1155");
-            tokensTransferredFrom = IERC20(token).transferFrom(msg.sender, contractOwner, price1);
-            require(tokensTransferredFrom, "transfer failed");
-            _mint(msg.sender, id1, 1, "");
-        } else if(tokenId == id2) {
-            require(price2 > 0, "price has not been set yet for token ID 2");
-            require(IERC20(token).allowance(msg.sender, address(this)) >= price2, "user has now allowed contract to spend enough tokens to mint ERC 1155");
-            tokensTransferredFrom = IERC20(token).transferFrom(msg.sender, this.owner(), price2);
-            require(tokensTransferredFrom, "transfer failed");
-            _mint(msg.sender, id2, 1, "");
-        } else if(tokenId == id3) {
-            require(price2 > 0, "price has not been set yet for token ID 3");
-            require(IERC20(token).allowance(msg.sender, address(this)) >= price3, "user has now allowed contract to spend enough tokens to mint ERC 1155");
-            tokensTransferredFrom = IERC20(token).transferFrom(msg.sender, this.owner(), price3);
-            require(tokensTransferredFrom, "transfer failed");
-            _mint(msg.sender, id3, 1, "");
-        }
+    function _baseURI() internal view override returns (string memory) {
+        return baseUri;
+    }
+
+    function setBaseUri(string memory newUri) external onlyOwner {
+        baseUri = newUri;
     }
 
     function setProjectOwner(address addr) external onlyProjectOwner(projectOwnerAddress) {
@@ -123,14 +62,8 @@ contract NFTGenerator is ERC1155, Ownable, Pausable, ERC1155Burnable, ProjectOwn
         listingPrice = _listingPrice;
     }
 
-    function setTokenPrice(uint256 tokenId, uint256 tokenPrice) external onlyOwner {
-        if(tokenId == id1) price1 = tokenPrice;
-        if(tokenId == id2) price2 = tokenPrice;
-        if(tokenId == id3) price3 = tokenPrice;
-    }
-
-    function setUri(string memory uri) external onlyOwner whenNotPaused {
-        _setURI(uri);
+    function setNFTPrice(uint256 _nftPrice) external onlyOwner {
+        nftPrice = _nftPrice;
     }
 
     function setValidUntil(uint256 _tokenId, uint256 numberOfDaysAfterToday) external onlyOwner whenNotPaused {
@@ -149,38 +82,35 @@ contract NFTGenerator is ERC1155, Ownable, Pausable, ERC1155Burnable, ProjectOwn
         _unpause();
     }
 
-    function mint(address account, uint256 id, uint256 amount, bytes memory data)
-        external
-        onlyOwner
-        whenNotPaused
-    {
-        _mint(account, id, amount, data);
-    }
-
-    function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
-        external
-        onlyOwner
-        whenNotPaused
-    {
-        _mintBatch(to, ids, amounts, data);
-    }
-
+    /// @dev allow the contract owner update the amount of NFTs a user is allowed to mint
     function updateWhitelist(address _addr, uint256 amount) external onlyOwner whenNotPaused {
         whitelistedAddresses[_addr] = amount;
     }
 
-    function whitelistMint(uint256 amount, uint256 tokenId, bytes memory data) external whenNotPaused {
-        require(whitelistedAddresses[msg.sender] >= 0, "user is not whitelisted");
-        require(whitelistedAddresses[msg.sender] >= amount, "user cannot mint that many tokens");
-        whitelistedAddresses[msg.sender] -= amount;
-        _mint(msg.sender, tokenId, amount, data);
+    /// @dev allow a whitelisted user to safely mint an NFT to a specific address
+    function userWhitelistMint() external whenNotPaused {
+        require(whitelistedAddresses[msg.sender] > 0, "user is not whitelisted");
+        require(nftPrice > 0, "Price needs to be set");
+        bool tokensTransferredFrom = IERC20(token).transferFrom(msg.sender, contractOwner, nftPrice);
+        require(tokensTransferredFrom, "transfer failed");
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
+        whitelistedAddresses[msg.sender] -= 1;
+        _safeMint(msg.sender, tokenId);
     }
 
-    function _beforeTokenTransfer(address operator, address from, address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
+    /// @dev allow the owner to safely mint an NFT to a specific address
+    function ownerWhitelistMint(address to) external onlyOwner whenNotPaused {
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
+        _safeMint(to, tokenId);
+    }
+
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
         internal
         whenNotPaused
         override
     {
-        super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
+        super._beforeTokenTransfer(from, to, tokenId);
     }
 }

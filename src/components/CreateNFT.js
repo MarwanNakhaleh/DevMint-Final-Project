@@ -8,7 +8,7 @@ import { StyledText } from "../styles/content";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
-export const CreateSFT = () => {
+export const CreateNFT = () => {
   const [fileUrl, setFileUrl] = useState(null);
   const [formInput, updateFormInput] = useState({
     price: "",
@@ -71,7 +71,7 @@ export const CreateSFT = () => {
         fontWeight={700}
         style={{ paddingBottom: "15px", display: "block", textAlign: "center" }}
       >
-        Create your own ERC 1155 token!
+        Create your own ERC 721 token!
       </StyledText>
       <FormContainer>
         <Form>

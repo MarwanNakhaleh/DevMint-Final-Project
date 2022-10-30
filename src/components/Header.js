@@ -48,16 +48,16 @@ const Header = (props) => {
     {
       id: 1,
       route: "How to use",
-      url: "https://blog.appseed.us/mui-react-coding-landing-page/",
+      url: "/howtouse",
     },
     {
       id: 2,
       route: "ERC 20",
-      url: "https://blog.appseed.us/mui-react-coding-landing-page/",
+      url: "/erc20",
     },
-    { id: 3, route: "ERC 721", url: "https://appseed.us/apps/react" },
-    { id: 4, route: "ERC 1155", url: "https://appseed.us/apps/react" },
-    { id: 5, route: "What's next?", url: "https://appseed.us/apps/react" }
+    { id: 3, route: "ERC 721", url: "/erc721" },
+    { id: 4, route: "ERC 1155", url: "/erc1155" },
+    { id: 5, route: "What's next?", url: "/nextsteps" }
   ];
 
   const [state, setState] = React.useState({
@@ -137,7 +137,6 @@ const Header = (props) => {
                 {links.map((link) => (
                   <Link
                     href={link.url}
-                    target="_blank"
                     underline="none"
                     key={link.id}
                   >
