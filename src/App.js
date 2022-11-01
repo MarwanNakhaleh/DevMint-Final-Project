@@ -26,7 +26,7 @@ const App = () => {
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-        <Route path="/howtouse" element={<HowToUse />} />
+        <Route path="/" element={<HowToUse />} />
           <Route path="/erc20" element={<CreateToken />} />
           <Route path="/erc721" element={<CreateNFT />} />
           <Route path="/erc1155" element={<CreateSFT />} />

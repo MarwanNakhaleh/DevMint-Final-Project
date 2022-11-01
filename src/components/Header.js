@@ -1,7 +1,6 @@
 // taken from AppSeed Material UI template
 import {
   AppBar,
-  Typography,
   Link,
   Box,
   List,
@@ -48,7 +47,7 @@ const Header = (props) => {
     {
       id: 1,
       route: "How to use",
-      url: "/howtouse",
+      url: "/",
     },
     {
       id: 2,
@@ -100,7 +99,7 @@ const Header = (props) => {
       <ElevationScroll {...props}>
         <AppBar>
           <StyledToolBar>
-            <Link href="#" underline="none">
+            <Link href="/" underline="none">
               <StyledLogo>
                 Business NFT Generator
               </StyledLogo>

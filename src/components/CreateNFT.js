@@ -96,11 +96,10 @@ export const CreateNFT = () => {
               updateFormInput({ ...formInput, price: e.target.value })
             }
           />
-          <Input type="file" name="Asset" className="my-4" />
-          {fileUrl && <img className="" width="350" src={fileUrl} />}
+          <Input type="file" name="Asset" />
+          {fileUrl && <img className="" width="350" src={fileUrl} alt={fileUrl} />}
           <Button
             onClick={listNFTForSale}
-            className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg"
           >
             Create NFT
           </Button>

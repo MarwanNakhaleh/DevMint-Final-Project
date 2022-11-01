@@ -17,17 +17,13 @@ export const CreateToken = () => {
 
   return (
     <>
-      <StyledBox>
-        <StyledGrid container>
-          <StyledText
-            variant="h3"
-            fontWeight={700}
-            style={{ paddingBottom: "15px"}}
-          >
-            Create your own ERC 20 token!
-          </StyledText>
-        </StyledGrid>
-      </StyledBox>
+      <StyledText
+        variant="h3"
+        fontWeight={700}
+        style={{ paddingBottom: "15px", display: "block", textAlign: "center" }}
+      >
+        Create your own ERC 20 token!
+      </StyledText>
       <FormContainer>
         <Form>
           <Input
@@ -53,7 +49,6 @@ export const CreateToken = () => {
           />
           <Button
             onClick={createERC20Token}
-            className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg"
           >
             Create Token
           </Button>

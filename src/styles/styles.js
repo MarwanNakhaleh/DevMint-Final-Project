@@ -1,40 +1,37 @@
-import {
-  AppBar,
-  Typography,
-  Link,
-  Box,
-  Toolbar,
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
-  Drawer,
-} from "@mui/material";
-import {MenuBook} from "@mui/icons-material";
+import { Typography, Toolbar } from "@mui/material";
+import { MenuBook } from "@mui/icons-material";
 import styled from "@emotion/styled";
 
 const StyledToolBar = styled(({ className, ...other }) => (
-  <Toolbar style={{ "height": "10vh",
-    "display": "flex",
-    "justifyContent": "space-between",
-    "padding": "20px",
-    "backgroundColor": "white" }} {...other} />
+  <Toolbar
+    style={{
+      height: "10vh",
+      display: "flex",
+      justifyContent: "space-between",
+      padding: "20px",
+      backgroundColor: "white",
+    }}
+    {...other}
+  />
 ))``;
 
 const StyledLink = styled(({ className, ...other }) => (
-  <Typography variant="h6" styles={{ "color": "#000" }} {...other} />
+  <Typography variant="h6" styles={{ color: "#000" }} {...other} />
 ))`
   color: "#000";
 `;
 
 const StyledLogo = styled(({ className, ...other }) => (
-  <Typography variant="h6" style={{ "color": '#333',
-  "cursor": 'pointer' }} {...other} />
+  <Typography
+    variant="h6"
+    style={{ color: "#333", cursor: "pointer" }}
+    {...other}
+  />
 ))``;
 
 const StyledMenuIcon = styled(({ className, ...other }) => (
-    <MenuBook classes={{ tooltip: className }} {...other} />
-  ))`
+  <MenuBook classes={{ tooltip: className }} {...other} />
+))`
     color: 'blue',
     cursor: 'pointer',
     `;
@@ -51,6 +48,20 @@ const Form = styled.section`
   padding-bottom: 48px;
 `;
 
+const Dropdown = styled.select`
+  padding: 16px;
+  width: 100%;
+  option {
+    color: black;
+    background: white;
+    display: flex;
+    white-space: pre;
+    min-height: 20px;
+    padding: 16px;
+    width: 100%;
+  }
+`;
+
 const Input = styled.input`
   padding: 16px;
   width: 100%;
@@ -62,4 +73,14 @@ const Button = styled.button`
   padding: 16px;
 `;
 
-export { StyledToolBar, StyledLink, StyledLogo, StyledMenuIcon, FormContainer, Form, Input, Button };
+export {
+  StyledToolBar,
+  StyledLink,
+  StyledLogo,
+  StyledMenuIcon,
+  FormContainer,
+  Form,
+  Input,
+  Button,
+  Dropdown,
+};
