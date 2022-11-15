@@ -1,24 +1,28 @@
-import { Typography, Toolbar } from "@mui/material";
+import { Typography, Toolbar, Box, AppBar } from "@mui/material";
 import { MenuBook } from "@mui/icons-material";
 import styled from "@emotion/styled";
 
 const StyledToolBar = styled(({ className, ...other }) => (
-  <Toolbar
-    style={{
-      height: "10vh",
-      display: "flex",
-      justifyContent: "space-between",
-      padding: "20px",
-      backgroundColor: "white",
-    }}
-    {...other}
-  />
+  <Box sx={{ flexGrow: 1 }}>
+    <AppBar position="static">
+      <Toolbar
+        style={{
+          height: "10vh",
+          display: "flex",
+          justifyContent: "space-between",
+          padding: "20px",
+          backgroundColor: "white",
+        }}
+        {...other}
+      />
+    </AppBar>
+  </Box>
 ))``;
 
 const StyledLink = styled(({ className, ...other }) => (
-  <Typography variant="h6" styles={{ color: "#000" }} {...other} />
+  <Typography variant="h6" styles={{ color: "#333" }} {...other} />
 ))`
-  color: "#000";
+  color: "#333";
 `;
 
 const StyledLogo = styled(({ className, ...other }) => (

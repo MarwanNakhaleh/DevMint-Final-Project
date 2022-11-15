@@ -3,8 +3,9 @@ import { ethers } from "ethers";
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import Web3Modal from "web3modal";
 
-import { FormContainer, Form, Input, Button, Dropdown } from "../styles/styles";
-import { StyledText } from "../styles/content";
+import { Input, Button, Dropdown } from "../styles/styles";
+import { StyledBox, StyledGrid, StyledText } from "../styles/content";
+import { FormContainer } from "./layout/FormContainer";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
@@ -12,23 +13,23 @@ export const CreateSFT = () => {
   const [fileUrl, setFileUrl] = useState(null);
   const [numberOfSFTs, setNumberOfSFTs] = useState(0);
   const [formInput, updateFormInput] = useState({
-    tokenAddress: ""
+    tokenAddress: "",
   });
   const [token1, setToken1] = useState({
     id: 0,
     supply: 0,
-    name: ""
+    name: "",
   });
   const [token2, setToken2] = useState({
     id: 0,
     supply: 0,
-    name: ""
+    name: "",
   });
   const [token3, setToken3] = useState({
     id: 0,
     supply: 0,
-    name: ""
-  })
+    name: "",
+  });
 
   async function onFormChange(e) {
     const file = e.target.files[0];
@@ -79,15 +80,15 @@ export const CreateSFT = () => {
   }
 
   function setTokenInformation(i, event, typeOfValue) {
-    switch(i) {
+    switch (i) {
       case 1:
-        setToken1({...token1, [typeOfValue]: event.target.value})
+        setToken1({ ...token1, [typeOfValue]: event.target.value });
         break;
       case 2:
-        setToken2({...token2, [typeOfValue]: event.target.value})
+        setToken2({ ...token2, [typeOfValue]: event.target.value });
         break;
       case 3:
-        setToken3({...token3, [typeOfValue]: event.target.value})
+        setToken3({ ...token3, [typeOfValue]: event.target.value });
         break;
       default:
         break;
@@ -95,8 +96,8 @@ export const CreateSFT = () => {
   }
 
   function allowInputsForNumberOfSFTs() {
-    let tokenInputs = []
-    for(let i = 1; i <= numberOfSFTs; i++) {
+    let tokenInputs = [];
+    for (let i = 1; i <= numberOfSFTs; i++) {
       tokenInputs.push(
         <>
           <Input
@@ -121,60 +122,47 @@ export const CreateSFT = () => {
   }
 
   return (
-    <>
-      <StyledText
-        variant="h3"
-        fontWeight={700}
-        style={{ paddingBottom: "15px", display: "block", textAlign: "center" }}
-      >
-        Create your own ERC 1155 token!
-      </StyledText>
-      <FormContainer>
-        <Form>
-        <Input
-            type="text"
-            placeholder="Contract Address for Token"
-            onChange={(e) =>
-              updateFormInput({ ...formInput, name: e.target.value })
-            }
-          />
-          <Input
-            type="text"
-            placeholder="Asset Name"
-            onChange={(e) =>
-              updateFormInput({ ...formInput, name: e.target.value })
-            }
-          />
-          <Input
-            type="textarea"
-            placeholder="Asset Description"
-            onChange={(e) =>
-              updateFormInput({ ...formInput, description: e.target.value })
-            }
-          />
-          <Input
-            type="text"
-            placeholder="Asset Price in Number of Your Tokens"
-            onChange={(e) =>
-              updateFormInput({ ...formInput, price: e.target.value })
-            }
-          />
-          <Dropdown onChange={(e) => setNumberOfSFTs(e.target.value)}>
-            <option value="" hidden>
-              How many tokens do you want?
-            </option>
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-            <option value={3}>3</option>
-          </Dropdown>
-          {allowInputsForNumberOfSFTs()}
-          <Input type="file" name="Asset" />
-          {fileUrl && (
-            <img className="" width="350" src={fileUrl} alt={fileUrl} />
-          )}
-          <Button onClick={listSFTForSale}>Create SFT</Button>
-        </Form>
-      </FormContainer>
-    </>
+    <FormContainer title="Create your own ERC 1155 token">
+      <Input
+        type="text"
+        placeholder="Contract Address for Token"
+        onChange={(e) =>
+          updateFormInput({ ...formInput, name: e.target.value })
+        }
+      />
+      <Input
+        type="text"
+        placeholder="Asset Name"
+        onChange={(e) =>
+          updateFormInput({ ...formInput, name: e.target.value })
+        }
+      />
+      <Input
+        type="textarea"
+        placeholder="Asset Description"
+        onChange={(e) =>
+          updateFormInput({ ...formInput, description: e.target.value })
+        }
+      />
+      <Input
+        type="text"
+        placeholder="Asset Price in Number of Your Tokens"
+        onChange={(e) =>
+          updateFormInput({ ...formInput, price: e.target.value })
+        }
+      />
+      <Dropdown onChange={(e) => setNumberOfSFTs(e.target.value)}>
+        <option value="" hidden>
+          How many tokens do you want?
+        </option>
+        <option value={1}>1</option>
+        <option value={2}>2</option>
+        <option value={3}>3</option>
+      </Dropdown>
+      {allowInputsForNumberOfSFTs()}
+      <Input type="file" name="Asset" />
+      {fileUrl && <img className="" width="350" src={fileUrl} alt={fileUrl} />}
+      <Button onClick={listSFTForSale}>Create SFT</Button>
+    </FormContainer>
   );
 };

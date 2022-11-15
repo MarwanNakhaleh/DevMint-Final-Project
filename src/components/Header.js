@@ -15,7 +15,12 @@ import PropTypes from "prop-types";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { StyledLogo, StyledToolBar, StyledLink, StyledMenuIcon } from "../styles/styles";
+import {
+  StyledLogo,
+  StyledToolBar,
+  StyledLink,
+  StyledMenuIcon,
+} from "../styles/styles";
 
 function ElevationScroll(props) {
   const { children, window } = props;
@@ -47,16 +52,23 @@ const Header = (props) => {
     {
       id: 1,
       route: "How to use",
-      url: "/",
+      url: "/how",
     },
     {
       id: 2,
       route: "ERC 20",
       url: "/erc20",
     },
-    { id: 3, route: "ERC 721", url: "/erc721" },
-    { id: 4, route: "ERC 1155", url: "/erc1155" },
-    { id: 5, route: "What's next?", url: "/nextsteps" }
+    {
+      id: 3,
+      route: "ERC 721",
+      url: "/erc721",
+    },
+    {
+      id: 4,
+      route: "ERC 1155",
+      url: "/erc1155",
+    },
   ];
 
   const [state, setState] = React.useState({
@@ -82,11 +94,11 @@ const Header = (props) => {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        {links.map((link) => (
+        {links.map((link) => {
           <ListItem button key={link.id}>
             <ListItemText primary={link.route} />
-          </ListItem>
-        ))}
+          </ListItem>;
+        })}
       </List>
     </Box>
   );
@@ -100,9 +112,7 @@ const Header = (props) => {
         <AppBar>
           <StyledToolBar>
             <Link href="/" underline="none">
-              <StyledLogo>
-                Business NFT Generator
-              </StyledLogo>
+              <StyledLogo>Business NFT Generator</StyledLogo>
             </Link>
 
             {matches ? (
@@ -134,14 +144,8 @@ const Header = (props) => {
                 }}
               >
                 {links.map((link) => (
-                  <Link
-                    href={link.url}
-                    underline="none"
-                    key={link.id}
-                  >
-                    <StyledLink>
-                      {link.route}
-                    </StyledLink>
+                  <Link href={link.url} underline="none" key={link.id}>
+                    <StyledLink>{link.route}</StyledLink>
                   </Link>
                 ))}
               </Box>
