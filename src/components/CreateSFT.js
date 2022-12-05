@@ -4,7 +4,6 @@ import { create as ipfsHttpClient } from "ipfs-http-client";
 import Web3Modal from "web3modal";
 
 import { Input, Button, Dropdown } from "../styles/styles";
-import { StyledBox, StyledGrid, StyledText } from "../styles/content";
 import { FormContainer } from "./layout/FormContainer";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
